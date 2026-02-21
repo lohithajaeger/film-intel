@@ -1,6 +1,7 @@
 'use client';
 import { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { useRouter } from "next/navigation";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -572,6 +573,8 @@ const media = [
   { emoji: "📸", title: "Behind the Scenes — Day 12", views: "892K views", bg: "linear-gradient(135deg,#1A1A0A,#2E2D1B)" },
 ];
 
+
+
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
@@ -588,13 +591,15 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+
+
 export default function ProducerDashboard() {
-  const emptyForm = { title: "", genre: "", targetCity: "", marketingBudget: "", releaseDate: "", cast: "", description: "" };
-  const [form, setForm] = useState(emptyForm);
+  const emptyForm = { title: "", genre: "", targetCity: "", marketingBudget: "", releaseDate: "", cast: "", description: "", link: "" }; const [form, setForm] = useState(emptyForm);
   const [userProjects, setUserProjects] = useState(projects); // projects = your existing dummy data
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeNav, setActiveNav] = useState("home");
   const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
 
   const navItems = [
     { id: "home", label: "Dashboard", icon: icons.home },
@@ -638,7 +643,10 @@ export default function ProducerDashboard() {
               <div
                 key={item.id}
                 className={`db-nav-item ${activeNav === item.id ? "active" : ""}`}
-                onClick={() => setActiveNav(item.id)}
+                onClick={() => {
+                  setActiveNav(item.id);
+                  if (item.id === "projects") router.push("/Producer/projects");
+                }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   {item.icon.split(" M").map((seg, i) => <path key={i} d={i === 0 ? seg : "M" + seg} />)}
@@ -945,6 +953,10 @@ export default function ProducerDashboard() {
               <input className="modal-input" placeholder="e.g. John Doe, Jane Smith" value={form.cast} onChange={e => setForm({ ...form, cast: e.target.value })} />
             </div>
             <div className="modal-field">
+              <div className="modal-label">Link / URL</div>
+              <input className="modal-input" placeholder="e.g. https://imdb.com/title/..." value={form.link} onChange={e => setForm({ ...form, link: e.target.value })} />
+            </div>
+            <div className="modal-field">
               <div className="modal-label">Description</div>
               <textarea className="modal-input" placeholder="A short synopsis..." rows={3} style={{ resize: "none" }} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
             </div>
@@ -968,6 +980,10 @@ export default function ProducerDashboard() {
             <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
               <span className="db-card-badge" style={{ background: "rgba(123,92,240,0.12)", color: "#9B7EFF" }}>{selectedProject.genre}</span>
               <span className={`project-status status-${selectedProject.status}`}>{selectedProject.statusLabel}</span>
+            </div>
+            <div className="modal-field">
+              <div className="modal-label">Link / URL</div>
+              <input className="modal-input" placeholder="e.g. https://imdb.com/title/..." value={form.link} onChange={e => setForm({ ...form, link: e.target.value })} />
             </div>
             {selectedProject.description && (
               <div style={{ fontSize: "0.875rem", color: "var(--muted)", lineHeight: 1.7, marginBottom: "1.25rem" }}>{selectedProject.description}</div>
